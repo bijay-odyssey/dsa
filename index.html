@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSA Tutor: Learn Data Structures & Algorithms</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-color: #ecf0f1;
+            --text-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        nav {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav button {
+            margin: 0 10px;
+            padding: 10px 15px;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        nav button:hover {
+            background-color: #f1f1f1;
+        }
+
+        .content {
+            background-color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .visualization {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            min-height: 300px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+
+        #arrayVisualizer {
+            display: flex;
+            gap: 10px;
+        }
+
+        .array-element {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--secondary-color);
+            color: white;
+            transition: transform 0.3s;
+        }
+
+        .array-element.highlight {
+            background-color: #e74c3c;
+            transform: scale(1.1);
+        }
+
+        .code-block {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            nav button {
+                margin: 5px;
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>DSA Tutor: Interactive Learning Platform</h1>
+    </header>
+
+    <nav>
+        <button onclick="showArrayOperations()">Array Operations</button>
+        <button onclick="showSortingAlgorithms()">Sorting Algorithms</button>
+        <button onclick="showSearchAlgorithms()">Search Algorithms</button>
+    </nav>
+
+    <div class="container">
+        <div id="content" class="content">
+            <h2 id="sectionTitle">Welcome to DSA Tutor</h2>
+            <p id="sectionDescription">
+                Select a topic from the navigation to start learning interactively.
+            </p>
+        </div>
+
+        <div id="visualization" class="visualization">
+            <!-- Visualization canvas -->
+            <div id="arrayVisualizer"></div>
+        </div>
+
+        <div id="codeSection" class="code-block">
+            <pre><code id="codeDisplay">
+// Code will be displayed here
+            </code></pre>
+        </div>
+    </div>
+
+    <script>
+        // Data Structures and Algorithms Visualization Logic
+        class DSATutor {
+            constructor() {
+                this.array = [];
+            }
+
+            createRandomArray(size = 10, max = 100) {
+                this.array = Array.from({length: size}, () => Math.floor(Math.random() * max));
+                this.visualizeArray();
+            }
+
+            visualizeArray() {
+                const visualizer = document.getElementById('arrayVisualizer');
+                visualizer.innerHTML = '';
+                this.array.forEach((value, index) => {
+                    const element = document.createElement('div');
+                    element.classList.add('array-element');
+                    element.textContent = value;
+                    element.dataset.index = index;
+                    visualizer.appendChild(element);
+                });
+            }
+
+            bubbleSort() {
+                const arr = [...this.array];
+                const steps = [];
+                
+                for (let i = 0; i < arr.length; i++) {
+                    for (let j = 0; j < arr.length - i - 1; j++) {
+                        steps.push({
+                            compare: [j, j+1],
+                            arr: [...arr]
+                        });
+                        
+                        if (arr[j] > arr[j + 1]) {
+                            [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        }
+                    }
+                }
+                
+                return { sortedArray: arr, steps };
+            }
+
+            binarySearch(target) {
+                const arr = [...this.array].sort((a, b) => a - b);
+                let left = 0;
+                let right = arr.length - 1;
+                const steps = [];
+
+                while (left <= right) {
+                    const mid = Math.floor((left + right) / 2);
+                    steps.push({
+                        left,
+                        right,
+                        mid,
+                        target,
+                        arr: [...arr]
+                    });
+
+                    if (arr[mid] === target) return { found: true, index: mid, steps };
+                    if (arr[mid] < target) left = mid + 1;
+                    else right = mid - 1;
+                }
+
+                return { found: false, steps };
+            }
+        }
+
+        const dsaTutor = new DSATutor();
+
+        function showArrayOperations() {
+            const content = document.getElementById('content');
+            const codeDisplay = document.getElementById('codeDisplay');
+            
+            content.innerHTML = `
+                <h2>Array Operations</h2>
+                <p>Learn basic array manipulation techniques and visualize them in real-time.</p>
+            `;
+
+            codeDisplay.textContent = `
+// Creating a Random Array
+dsaTutor.createRandomArray(10, 100);
+
+// Array Basics
+let myArray = dsaTutor.array;
+console.log("Original Array:", myArray);
+
+// Accessing Elements
+console.log("First Element:", myArray[0]);
+console.log("Last Element:", myArray[myArray.length - 1]);
+            `;
+
+            dsaTutor.createRandomArray(10, 100);
+        }
+
+        function showSortingAlgorithms() {
+            const content = document.getElementById('content');
+            const codeDisplay = document.getElementById('codeDisplay');
+            
+            content.innerHTML = `
+                <h2>Bubble Sort Algorithm</h2>
+                <p>Visualize how Bubble Sort works by repeatedly stepping through the list.</p>
+            `;
+
+            codeDisplay.textContent = `
+// Bubble Sort Implementation
+function bubbleSort(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr.length - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                // Swap elements
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+            }
+        }
+    }
+    return arr;
+}
+            `;
+
+            const { sortedArray, steps } = dsaTutor.bubbleSort();
+            dsaTutor.visualizeArray();
+
+            // Optional: Add step-by-step visualization
+            console.log("Sorting Steps:", steps);
+        }
+
+        function showSearchAlgorithms() {
+            const content = document.getElementById('content');
+            const codeDisplay = document.getElementById('codeDisplay');
+            
+            content.innerHTML = `
+                <h2>Binary Search Algorithm</h2>
+                <p>Learn how Binary Search efficiently finds an element in a sorted array.</p>
+            `;
+
+            codeDisplay.textContent = `
+// Binary Search Implementation
+function binarySearch(arr, target) {
+    let left = 0;
+    let right = arr.length - 1;
+
+    while (left <= right) {
+        let mid = Math.floor((left + right) / 2);
+        
+        if (arr[mid] === target) return mid;
+        if (arr[mid] < target) left = mid + 1;
+        else right = mid - 1;
+    }
+    
+    return -1; // Target not found
+}
+            `;
+
+            dsaTutor.createRandomArray(15, 100);
+            const target = dsaTutor.array[Math.floor(dsaTutor.array.length / 2)];
+            const searchResult = dsaTutor.binarySearch(target);
+
+            console.log("Binary Search Result:", searchResult);
+        }
+    </script>
+</body>
+</html>
